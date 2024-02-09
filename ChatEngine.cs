@@ -126,6 +126,7 @@ namespace Bannerlord.ChatGPT
 
         private void MeetingLocationPromots()
         {
+            if (Hero.OneToOneConversationHero == null) return;
 
             _promots += "This conversation happens at " + Hero.OneToOneConversationHero.CurrentSettlement.Name.ToString() + ". ";
 
