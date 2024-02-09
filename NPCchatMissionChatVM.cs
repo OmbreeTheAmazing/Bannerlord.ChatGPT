@@ -136,9 +136,12 @@ namespace Bannerlord.ChatGPT
 
                 var characterName = Campaign.Current.ConversationManager.OneToOneConversationCharacter.Name.ToString();
                 var conversationText = userInput + "\n" + _currentResponse;
-                var lastMeetingTime = Hero.OneToOneConversationHero.LastMeetingTimeWithPlayer.ToString();
+                if (Hero.OneToOneConversationHero != null)
+                {
+                    var lastMeetingTime = Hero.OneToOneConversationHero.LastMeetingTimeWithPlayer.ToString();
 
-                promotsEngine.SaveConversationHistory(characterName, conversationText, lastMeetingTime);
+                    promotsEngine.SaveConversationHistory(characterName, conversationText, lastMeetingTime);
+                }
 
                 if (_currentResponse.Length > _chatBoxLength && _currentResponse != null)
                 {

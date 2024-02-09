@@ -24,7 +24,6 @@ namespace Bannerlord.ChatGPT
 
         public void SaveConversationHistory(string characterName, string conversationText, string lastMeetingTime)
         {
-
             string conversationDirectory = Path.Combine(BaseDirectory, "ConversationHistories");
             Directory.CreateDirectory(conversationDirectory);
 
@@ -126,6 +125,7 @@ namespace Bannerlord.ChatGPT
 
         private void MeetingLocationPromots()
         {
+
             if (Hero.OneToOneConversationHero == null) return;
 
             _promots += "This conversation happens at " + Hero.OneToOneConversationHero.CurrentSettlement.Name.ToString() + ". ";
