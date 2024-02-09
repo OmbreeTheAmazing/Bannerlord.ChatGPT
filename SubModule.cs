@@ -4,6 +4,8 @@ using TaleWorlds.MountAndBlade;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade.View.MissionViews;
+using System.Reflection;
 
 
 namespace Bannerlord.ChatGPT
@@ -26,7 +28,6 @@ namespace Bannerlord.ChatGPT
             base.OnSubModuleLoad();
             InformationManager.DisplayMessage(new InformationMessage(
                 "Bannerlord.ChatGPT has been loaded".ToString()));
-
         }
 
         public override void OnMissionBehaviorInitialize(Mission mission)
@@ -41,7 +42,6 @@ namespace Bannerlord.ChatGPT
 
         }
     }
-
 
     class LoggingSystem
     {

@@ -1,5 +1,6 @@
 ﻿using SandBox.View.Missions;
 using System;
+using System.Resources;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.Core;
@@ -8,6 +9,7 @@ using TaleWorlds.Engine.Screens;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade.GauntletUI.Mission;
+using TaleWorlds.MountAndBlade.View;
 using TaleWorlds.MountAndBlade.View.MissionViews;
 using TaleWorlds.ScreenSystem;
 using TaleWorlds.TwoDimension;
@@ -15,6 +17,7 @@ using TaleWorlds.TwoDimension;
 
 namespace Bannerlord.ChatGPT
 {
+    [DefaultView]
     public class NPCchatMissionConversationView : MissionView
     {
         private NPCchatMissionChatVM _dataSource;
@@ -27,19 +30,28 @@ namespace Bannerlord.ChatGPT
 
         public bool OnAIchat = false;
         public NPCchatMissionConversationView() => this.ViewOrderPriority = 100;
+
+        private bool _wasRightMouseButtonPressed = false;
+        private bool _wasLeftMouseButtonPressed = false;
+
         public override void OnMissionScreenInitialize()
         {
             base.OnMissionScreenInitialize();
-            
+
             conversationID = null;
         }
+
+        public override void OnBehaviorInitialize()
+        {
+            base.OnBehaviorInitialize();
+        }
+
         public override void OnConversationBegin()
         {
             base.OnConversationBegin();
             LoadLayerAndInitializeVM();
-            
-
         }
+
         public override void OnConversationEnd()
         {
             MissionScreen.RemoveLayer(_gauntletLayer);
@@ -47,17 +59,13 @@ namespace Bannerlord.ChatGPT
             _gauntletLayer = null;
             _conversationCameraView = null;
             _dataSource = null;
-            
+
             base.OnConversationEnd();
-            
-
-
-
         }
         public override void OnMissionScreenFinalize()
         {
-            
-            
+
+
             base.OnMissionScreenFinalize();
 
 
@@ -70,35 +78,45 @@ namespace Bannerlord.ChatGPT
             if (Input.IsKeyPressed(InputKey.Tab))
             {
                 var a = 1;
-                }
+            }
 
             if (_conversationManager != null && _gauntletLayer != null && _gauntletLayer.Input != null && _dataSource.IsChating == true)
             {
+                // Handling for the Right Mouse Button (Previous Page)
                 if (Input.IsKeyPressed(InputKey.RightMouseButton) || this._gauntletLayer.Input.IsKeyDown(InputKey.RightMouseButton))
-                    {
-                        this._dataSource.PreviousPage();
-                        return;
+                {
+                    _wasRightMouseButtonPressed = true;
+                }
+                else if (_wasRightMouseButtonPressed && (!Input.IsKeyDown(InputKey.RightMouseButton) && !this._gauntletLayer.Input.IsKeyDown(InputKey.RightMouseButton)))
+                {
+                    _dataSource.PreviousPage();
+                    _wasRightMouseButtonPressed = false;
+                }
 
-                    }
+                // Handling for the Left Mouse Button (Next Page)
                 if (Input.IsKeyPressed(InputKey.LeftMouseButton) || this._gauntletLayer.Input.IsKeyDown(InputKey.LeftMouseButton))
                 {
-                    this._dataSource.NextPage();
-                    return;
-
+                    _wasLeftMouseButtonPressed = true;
                 }
+                else if (_wasLeftMouseButtonPressed && (!Input.IsKeyDown(InputKey.LeftMouseButton) && !this._gauntletLayer.Input.IsKeyDown(InputKey.LeftMouseButton)))
+                {
+                    _dataSource.NextPage();
+                    _wasLeftMouseButtonPressed = false;
+                }
+
                 if (Input.IsKeyPressed(InputKey.Tab) || this.IsGameKeyReleasedInAnyLayer("Leave", true) || this._gauntletLayer.Input.IsKeyDown(InputKey.Tab))
                 {
                     this._dataSource.ExitChating();
                     return;
-                    
+
                 }
                 else if (Input.IsKeyDown(InputKey.Enter) || this.IsGameKeyReleasedInAnyLayer("Confirm", true) || _gauntletLayer.Input.IsKeyDown(InputKey.Enter))
                 {
                     if (_dataSource.GetType() == typeof(NPCchatMissionChatVM) && !_dataSource.isResponding)
                     {
-                        
+
                         _dataSource.SendPlayerInputAsync();
-                        
+
                     }
                 }
             }
@@ -113,7 +131,7 @@ namespace Bannerlord.ChatGPT
         public void UpdateChatStatus(bool isChating)
         {
             _dataSource.IsChating = isChating;
-            if ( isChating && !_dataSource._isBotStarted)
+            if (isChating && !_dataSource._isBotStarted)
             {
                 _dataSource.StartBotAsync();
             }
